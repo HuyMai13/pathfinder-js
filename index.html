@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pathfinding Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="top-container">
+        <div id="title">Pathfinder</div>
+        <div id="legend-container">
+            <img class="img" src="./assets/start.png" alt="Start node"> 
+            <div class="legend">Start node</div>
+            <img class="img" src="./assets/end.png" alt="End node"> 
+            <div class="legend">End node</div>
+            <img class="img" src="./assets/node.png" alt="Unvisited node"> 
+            <div class="legend">Unvisited node</div>
+            <img class="img" src="./assets/visited.png" alt="Visited node"> 
+            <div class="legend">Visited node</div>
+            <img class="img" src="./assets/wall.png" alt="Visited node"> 
+            <div class="legend">Wall node</div>
+        </div>
+    </div>
+    <canvas id="board"></canvas>
+    <div id="btn-container">
+        <div id="algo-container">
+            <button id="algo">Dijkstra's Algorithm
+                <img class="svg" src="./assets/chevron-down-12-filled.svg" width="16px" 
+                height="16px" alt="Down Arrow">
+            </button>
+        </div>
+        <div id="mid-btn-container">
+            <button id="reset">Reset All</button>
+            <button id="dijkstra">Run Pathfinder</button>
+            <button id="clear">Clear Wall</button>
+        </div>
+        <div id="adv-btn-container">
+            <div>Advanced</div>
+        </div>
+    </div>
+    <script src="pathfinder.js"></script>
+</body>
+</html>
