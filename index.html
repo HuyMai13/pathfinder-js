@@ -7,32 +7,50 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="tutorial">
+        <h1>Tutorial</h1>
+        <h3>This is a visual demo of pathfinding algorithm and maze generation algorithm</h3>
+        <li>Drag <span style="color:limegreen; font-size: 125%">start</span> and <span style="color:red; font-size:125%">end</span> node to move it to an empty node</li>
+        <li>Click or drag on empty node to create <span style="color:darkgray; font-size: 125%;">wall</span></li>
+        <li>Double click on <span style="color:darkgray; font-size: 125%;">wall</span> to turn it to empty node</li>
+    </div>
+    <div id="overlay"></div>
     <div id="top-container">
         <div id="title">Pathfinder</div>
         <div id="legend-container">
             <img class="img" src="./assets/start.png" alt="Start node"> 
-            <div class="legend">Start node</div>
-            <img class="img" src="./assets/end.png" alt="End node"> 
-            <div class="legend">End node</div>
+            <div class="legend">Start</div>
+            <img class="img" src="./assets/end.png" alt="End node">
+            <div class="legend">End</div>
             <img class="img" src="./assets/node.png" alt="Unvisited node"> 
-            <div class="legend">Unvisited node</div>
+            <div class="legend">Empty</div>
             <img class="img" src="./assets/visited.png" alt="Visited node"> 
-            <div class="legend">Visited node</div>
-            <img class="img" src="./assets/wall.png" alt="Visited node"> 
-            <div class="legend">Wall node</div>
+            <div class="legend">Visited</div>
+            <img class="img" src="./assets/wall.png" alt="Wall node">
+            <div class="legend">Wall</div>
         </div>
     </div>
     <canvas id="board"></canvas>
     <div id="btn-container">
         <div id="algo-container">
-            <button id="algo">Dijkstra's Algorithm
-                <img class="svg" src="./assets/chevron-down-12-filled.svg" width="16px" 
-                height="16px" alt="Down Arrow">
+            <button id="algo-btn">Dijkstra's Algorithm
+                <img id="arrow-down" src="./assets/chevron-down-12-filled.svg" alt="Down Arrow">
             </button>
+            <ul class="dropmenu" id="algo">
+                <li id="algo-dijks">Dijkstra's Algorithm</li>
+                <li id="algo-astar">A* Algorithm</li>
+            </ul>
+            <button id="maze-btn">Generate wall/maze
+                <img id="arrow-down" src="./assets/chevron-down-12-filled.svg" alt="Down Arrow">
+            </button>
+            <ul class="dropmenu" id="maze">
+                <li id="recursive">Recursive backtracker maze</li>
+                <li id="random">Random wall</li>
+            </ul>
         </div>
-        <div id="mid-btn-container">
+        <div id="board-btn-container">
             <button id="reset">Reset All</button>
-            <button id="dijkstra">Run Pathfinder</button>
+            <button id="run">Run Pathfinder</button>
             <button id="clear">Clear Wall</button>
         </div>
         <div id="adv-btn-container">

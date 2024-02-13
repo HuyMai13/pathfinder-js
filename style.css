@@ -10,6 +10,69 @@ body {
     color: white;
 }
 
+li {
+    list-style: none;
+}
+
+.grayout {
+    background-color: rgb(40, 40, 40);
+    color: white;
+    pointer-events: none;
+}
+
+/* TUTORIAL */
+#tutorial {
+    position: fixed;
+    padding-bottom: 1.5rem;
+    top: 20%;
+    left: 50%;
+    width: 100vh;
+    max-width: 75%;
+    background-color: rgb(20, 20, 20);
+    border: 1px solid snow;
+    border-radius: 10px;
+    transform: translate(-50%, 0) scale(1);
+    transition: 200ms ease-in-out;
+    z-index: 2;
+}
+#tutorial.off {
+    transform: translate(-50%, 0) scale(0);
+}
+#tutorial h1{
+    display: flex;
+    justify-content: center;
+    margin: 3rem;
+    font-size: 2.5rem;
+    text-decoration: underline;
+    text-underline-offset: 1rem;
+}
+#tutorial h3{
+    font-size: 1.3rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    margin-bottom: 3rem;
+}
+#tutorial li{
+    margin: 1rem 3rem;
+}
+
+#overlay {
+    position: fixed;
+    opacity: 0.5;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: snow;
+    z-index: 1;
+    pointer-events: all;
+}
+
+#overlay.off {
+    opacity: 0;
+    pointer-events: none;
+}
+
 #top-container {
     display: flex;
     justify-content: space-between;
@@ -21,16 +84,15 @@ body {
     height: 2rem;
     padding-top: 2vh;
 }
-
-.img {
+#legend-container .img {
     width: 2rem;
 }
 
 .legend {
-    line-height: 2.2rem;
+    line-height: 2rem;
     width: fit-content;
     text-align: center;
-    padding: 0 2rem 0 .25rem;
+    padding: 0 1.5rem 0 .25rem;
 }
 
 #title {
@@ -41,16 +103,17 @@ body {
     margin: 1vh 25px;
 }
 
-/************************** BUTTON ****************************/
+/* BUTTON */
 button {
     font-family: inherit;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 500;
-    transition: all 100ms ease;
-    width: 12rem;
-    padding: .8rem 1rem;
+    background-color: white;
+    transition: all 200ms ease;
+    width: 8rem;
+    padding: .7rem;
     border-radius: 7px;
-    margin: 1rem;
+    margin: 1vh;
     cursor: pointer;
 }
 
@@ -60,54 +123,73 @@ button {
 }
 
 #algo-container {
-    padding-left: 1vh;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
-#algo {
+#algo-container button {
     display: flex;
     justify-content: space-between;
+    margin-left: 3vh;
+    margin-bottom: 0;
+    padding-left: .5rem;
+    padding-right: .5rem;
     font-size: 1rem;
+    width: 12rem;
+}
+#maze-btn {
+    margin-left: 0 !important;
+    width: 13rem !important;
+}
+
+.dropmenu {
+    display: none;
+    position: absolute;
+    left: 3vh;
+    bottom: 2.2rem;
+    padding: .5vh;
+    width: 12.5rem;
+    background-color: snow;
+    color: black;
+    border-radius: 7px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+.dropmenu.show {
+    display: block;
+}
+.dropmenu li {
+    padding: .5rem 3vh;
+    cursor: pointer;
+}
+.dropmenu li:hover {
+    background-color: rgb(243, 217, 170);
+    border-radius: 7px;
+}
+
+#maze {
+    left: calc(3vh + 12.5rem);
     width: 14rem;
 }
 
-#reset {
-    background-color: rgb(40, 40, 40);
-    color: white;
-    font-weight: bold;
+#run {
+    font-size: 1.25rem;
+    width: 11rem;
 }
 
-#reset:hover {
-    background-color: white;
-    color: rgb(40, 40, 40);
-    font-weight: 500;
-}
-
-#dijkstra:hover {
-    background-color: rgb(40, 40, 40);
-    color: white;
-    font-weight: bold;
-}
-
-#clear {
-    background-color: rgb(40, 40, 40);
-    color: white;
-    font-weight: bold;
-}
-
-#clear:hover {
-    background-color: white;
-    color: rgb(40, 40, 40);
-    font-weight: 500;
+#board-btn-container button:hover{
+    font-weight: 900;
+    background-color: blanchedalmond;
 }
 
 #adv-btn-container {
-    margin: 1.5vh 3vh;
+    margin: 2vh 3vh;
     font-size: 1.5rem;
     text-decoration: underline;
     text-underline-offset: .5rem;
     cursor: pointer;
 }
-
 #adv-btn-container:hover {
     color: rgb(252, 226, 56);
 }
