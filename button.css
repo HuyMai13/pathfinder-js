@@ -1,0 +1,95 @@
+/* BUTTON */
+button {
+    font-family: inherit;
+    font-size: .9rem;
+    font-weight: 500;
+    background-color: white;
+    transition: all 250ms ease;
+    width: 7rem;
+    padding: .7rem;
+    border-radius: 7px;
+    margin: 1vh;
+    cursor: pointer;
+}
+
+#btn-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+#algo-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#algo-container button {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 3vh;
+    margin-bottom: 0;
+    padding-left: .5rem;
+    padding-right: .5rem;
+    width: 11rem;
+}
+
+#maze {
+    left: calc(4vh + 11rem);
+    width: 14rem;
+}
+
+#maze-btn {
+    margin-left: 0 !important;
+    width: 12rem !important;
+}
+
+.dropmenu {
+    display: none;
+    position: absolute;
+    left: 3vh;
+    bottom: 2.2rem;
+    padding: .5vh;
+    width: 12rem;
+    background-color: snow;
+    color: black;
+    border-radius: 7px;
+    font-size: .9rem;
+    font-weight: 500;
+}
+.dropmenu.show {
+    display: block;
+}
+.dropmenu li {
+    padding: .5rem 3vh;
+    cursor: pointer;
+}
+.dropmenu li:hover {
+    background-color: rgb(243, 217, 170);
+    border-radius: 7px;
+}
+
+#run {
+    font-size: 1.2rem;
+    width: 11rem;
+}
+
+#board-btn-container button:hover{
+    box-shadow: 0 0 0 2px cyan;
+    color: snow;
+    background-color:darkslategray;
+}
+
+#adv-btn-container {
+    display: flex;
+    margin: 2.5vh;
+    font-size: 1.25rem;
+    text-decoration: underline;
+    text-underline-offset: .5rem;
+    cursor: pointer;
+}
+#adv-btn-container img{
+    padding-right: .5rem;
+}
+#adv-btn-container:hover {
+    color: rgb(252, 226, 56);
+}

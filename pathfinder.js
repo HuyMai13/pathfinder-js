@@ -1,28 +1,30 @@
-const row = 25;
-const col = 75;
+const row = 30;
+const col = 80;
 let board = [];
 
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth-2*canvas.offsetLeft;
+canvas.width = window.innerWidth-2*(canvas.offsetLeft+10);
 const nodeLen = canvas.width/col;
-canvas.height = nodeLen*row;
+canvas.height = nodeLen*row+1;
 
-let xStart, yStart, xEnd, yEnd; // x, y is index
+let start = {x:null, y:null};
+let end = {x:null, y:null};
+let payload = {x:null, y:null};
 let canvasImg; // blank canvas snapshot
 let img = new Image();
 
 main();
 
 function main(){
-    console.log("Row", row, "\nCol", col, "\nCanvas widdth", canvas.width, "\nnodeLen", nodeLen);
+    console.log("Row", row, "\nCol", col, "\nCanvas width", canvas.width, "\nnodeLen", nodeLen);
 
     let intervalID = []; // array pass by reference to clearInterval outside of func
     let timeoutID = [];
     let requestID = []; // array pass by reference to cancelAnimationFrame outside of func
-    let running = {bool:false}; // pass by reference (to stop animation)
+    let running = {bool:false}; // boolean for running animation (pass by reference to modify inside of func)
     let algo = "dijks";
-    let path = [];
+    let path = [];  // path to draw
 
     const algoBtn = document.getElementById("algo-btn");
     const mazeBtn = document.getElementById("maze-btn");
@@ -36,13 +38,17 @@ function main(){
         document.getElementById("overlay").classList.add("off");
         document.getElementById("tutorial").classList.add("off");
     });
+    document.getElementById("info").addEventListener("click", () => {
+        document.getElementById("overlay").classList.remove("off");
+        document.getElementById("tutorial").classList.remove("off");
+    });
     document.getElementById("reset").addEventListener("click", () => {
         // clear all animation before reset
         for(let id of timeoutID){
             clearTimeout(id);
         }
         clearInterval(intervalID);
-        cancelAnimationFrame(requestID);
+        for(req of requestID) cancelAnimationFrame(req);
         setRunning(running, false);
         resetBoard();
     });
@@ -64,9 +70,12 @@ function main(){
     // MAZE BUTTON LISTENER
     document.getElementById("maze-btn").addEventListener("click", () => mazeList.classList.toggle("show"));
     document.getElementById("recursive").addEventListener("click", () => {
+        setRunning(running, true);
+        updateNode();
         mazeBtn.textContent = "Recursive backtracker";
         mazeBtn.appendChild(arrowImg.cloneNode(true));
         mazeList.classList.toggle("show");
+        recursiveBacktracker(requestID, running);
     });
     document.getElementById("random").addEventListener("click", () => {
         setRunning(running, true);
@@ -89,7 +98,19 @@ function main(){
             drawPath(path, 25, timeoutID);
         }
     });
-
+    document.getElementById("clear").addEventListener("click", () => {
+        if(!running.bool){
+            for(let i of board){
+                for(let node of i){
+                    if(node.property == "wall"){
+                        node.property = null;
+                    }
+                }
+            }
+            reDrawNode();
+        }
+    });
+    
     // CANVAS LISTENERS
     canvas.addEventListener("mousedown", (e) => {
         if(running.bool) return;
@@ -112,66 +133,31 @@ function main(){
                 }
             }
         } else { // or draw wall
-            createWall(x, y);
+            swapPropWall(x, y);
+            reDrawNode();
+            let [xCur, yCur] = getMousePos(e);
             canvas.onmousemove = (e) => {
                 const [x, y] = getMousePos(e);
-                createWall(x, y);
+                if(x == xCur && y == yCur) return;
+                swapPropWall(x, y);
+                xCur = x;
+                yCur = y;
+                reDrawNode();
             }
         }
     });
     canvas.addEventListener("mousemove", (e) => highlightNode(e));
-    canvas.addEventListener("mouseup", () => {
-        canvas.onmousemove = null;
-    });
+    canvas.addEventListener("mouseup", () => canvas.onmousemove = null);
     canvas.addEventListener("dblclick", (e) => {
         const [x, y] = getMousePos(e);
-        if(board[x][y].property === "wall"){
-            board[x][y].property = null;
-            reDrawNode;
-        }
+        
     });
     canvas.addEventListener("mouseout", () => {
+        if(running.bool) return;
         reDrawNode();
-        canvas.onmousemove = null
+        canvas.onmousemove = null;
     });
 
-    document.getElementById("clear").addEventListener("click", () => {
-        if(!running.bool){
-            for(let i of board){
-                for(let node of i){
-                    if(node.property == "wall"){
-                        node.property = null;
-                    }
-                }
-            }
-            reDrawNode();
-        }
-    });
-    // clear board and re draw
-    function reDrawNode(){
-        if(running.bool) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-        img.src = canvasImg;
-        ctx.lineWidth = 1;
-        for(let i of board){
-            for(let node of i){
-                switch(node.property){
-                    case "start":
-                        ctx.fillStyle = "green";
-                        ctx.fillRect(node.x, node.y, nodeLen, nodeLen);
-                        break;
-                    case "end":
-                        ctx.fillStyle = "red";
-                        ctx.fillRect(node.x, node.y, nodeLen, nodeLen);
-                        break;
-                    case "wall":
-                        ctx.fillStyle = "darkgray";
-                        ctx.fillRect(node.x, node.y, nodeLen-1, nodeLen-1);
-                }
-            }
-        }
-    }
     function highlightNode(e){
         if(running.bool) return;
         reDrawNode();
@@ -201,14 +187,39 @@ function resetBoard(){
 
     canvasImg = canvas.toDataURL();
     // Start and End point
-    xStart = 1, yStart = 1, xEnd = col-2, yEnd = row-2;
-    board[xStart][yStart].property = "start";
+    start.x = 1;
+    start.y = 1;
+    end.x = col-2;
+    end.y = row-2;
+    board[start.x][start.y].property = "start";
     ctx.fillStyle = "green";
-    ctx.fillRect(board[xStart][yStart].x, board[xStart][yStart].y, nodeLen, nodeLen);
+    ctx.fillRect(board[start.x][start.y].x, board[start.x][start.y].y, nodeLen, nodeLen);
 
-    board[xEnd][yEnd].property = "end"
+    board[end.x][end.y].property = "end"
     ctx.fillStyle = "red";
-    ctx.fillRect(board[xEnd][yEnd].x, board[xEnd][yEnd].y, nodeLen, nodeLen);
+    ctx.fillRect(board[end.x][end.y].x, board[end.x][end.y].y, nodeLen, nodeLen);
+}
+
+// clear board and re draw
+function reDrawNode(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+    img.src = canvasImg;
+    ctx.lineWidth = 1;
+    for(let i of board){
+        for(let node of i){
+            switch(node.property){
+                case "start":
+                    fillNode(node.x, node.y, nodeLen, "green");
+                    break;
+                case "end":
+                    fillNode(node.x, node.y, nodeLen, "red");
+                    break;
+                case "wall":
+                    fillNode(node.x, node.y, nodeLen, "darkgray");
+            }
+        }
+    }
 }
 
 // Update x, y index of mouse on board[]
@@ -221,12 +232,11 @@ function getMousePos(event){
     return [x, y];
 }
 
-function createWall(x, y){
-    if(board[x][y].property === null){ //|| rightClick.bool === false
+function swapPropWall(x, y){
+    if(board[x][y].property == null){
         board[x][y].property = "wall";
-
-        ctx.fillStyle = "darkgray";
-        ctx.fillRect(board[x][y].x, board[x][y].y, nodeLen-1, nodeLen-1);
+    } else if(board[x][y].property == "wall"){
+        board[x][y].property = null;
     }
 }
 
@@ -234,12 +244,12 @@ function updateNode(){ // update start and end xy coordinate
     for(let i=0; i < col; i++){
         for(let j=0; j < row; j++){
             if(board[i][j].property === "start"){
-                xStart = i;
-                yStart = j;
+                start.x = i;
+                start.y = j;
             }
             if(board[i][j].property === "end"){
-                xEnd = i;
-                yEnd = j;
+                end.x = i;
+                end.y = j;
             }
         }
     }
@@ -253,7 +263,7 @@ function setRunning(running, bool){
     }
 }
 
-async function aStarAlgo(intervalID, heuristic=true){
+async function aStarAlgo(intervalID, heuristic=true, randStep=false){
     const nodes = [];
     if(heuristic){
         for(let i=0; i < col; i++){
@@ -261,7 +271,7 @@ async function aStarAlgo(intervalID, heuristic=true){
             for(let j=0; j < row; j++){
                 nodes[i][j] = { // xPath yPath store previous node index to backtrack
                     dist: Number.POSITIVE_INFINITY, // dist from start
-                    distToEnd: Math.abs(xEnd - i) + Math.abs(yEnd - j), // absolute dist from this to end (heuristic)
+                    distToEnd: Math.abs(end.x - i) + Math.abs(end.y - j), // absolute dist from this to end (heuristic)
                     visited : false,
                     x: i,
                     y: j,
@@ -294,8 +304,8 @@ async function aStarAlgo(intervalID, heuristic=true){
     // get neighbor node from x, y (top, left, bot, right) if possible
     function getNeighbor(node){
         const neighbor = [];
-        let x = node.x;
-        let y = node.y;
+        const x = node.x;
+        const y = node.y;
         if((x + 1) < col && nodes[x+1][y].visited === false){
             if(board[x+1][y].property === null || board[x+1][y].property === "end"){
                 neighbor.push(nodes[x+1][y]);
@@ -341,8 +351,8 @@ async function aStarAlgo(intervalID, heuristic=true){
         return minNode;
     }
     
-    let x = xStart;
-    let y = yStart;
+    let x = start.x;
+    let y = start.y;
     nodes[x][y].dist = 0;
     nodes[x][y].fill = true;
     let neighbor = getNeighbor(nodes[x][y]);
@@ -359,19 +369,19 @@ async function aStarAlgo(intervalID, heuristic=true){
     });
 
     function runAStar(){
-        const node = getMinNode(nodes);
-        if(node != null){
-            neighbor = getNeighbor(node);
-            node.visited = true;
-            x = node.x;
-            y = node.y;
+        const curNode = getMinNode(nodes);
+        if(curNode != null){
+            neighbor = getNeighbor(curNode);
+            curNode.visited = true;
+            x = curNode.x;
+            y = curNode.y;
         }
         for(let i=0; i < neighbor.length; i++){
             let xNb = neighbor[i].x;
             let yNb = neighbor[i].y;
-            let newDist = node.dist + nodes[xNb][yNb].weight;
+            let newDist = curNode.dist + nodes[xNb][yNb].weight;
             if(newDist < nodes[xNb][yNb].dist){
-                nodes[xNb][yNb].dist = node.dist + nodes[xNb][yNb].weight;
+                nodes[xNb][yNb].dist = curNode.dist + nodes[xNb][yNb].weight;
                 nodes[xNb][yNb].xPath = x;
                 nodes[xNb][yNb].yPath = y;
             }
@@ -389,8 +399,7 @@ async function aStarAlgo(intervalID, heuristic=true){
                 return path;
             }
             if(nodes[xNb][yNb].fill === false){
-                ctx.fillStyle = "rgba(255, 215, 0, 0.2)";
-                ctx.fillRect(board[xNb][yNb].x, board[xNb][yNb].y, nodeLen, nodeLen);
+                fillNode(board[xNb][yNb].x, board[xNb][yNb].y, nodeLen, "rgba(255, 215, 0, 0.2)");
                 nodes[xNb][yNb].fill = true;
             }
         }
@@ -403,7 +412,7 @@ function drawLine(x, y){
 }
 
 function drawPath(path, delay, timeout){ // path, timeout array
-    ctx.moveTo(board[xStart][yStart].x + nodeLen/2, board[xStart][yStart].y + nodeLen/2);              
+    ctx.moveTo(board[start.x][start.y].x + nodeLen/2, board[start.x][start.y].y + nodeLen/2);              
     ctx.lineWidth = nodeLen / 6;
     ctx.strokeStyle = "white";
     
@@ -416,7 +425,7 @@ function drawPath(path, delay, timeout){ // path, timeout array
 
 function genRandMaze(requestID, runBool){
     let wall = [];
-    let density = 4; // lower denser but not < 1
+    let density = 3; // lower denser but not < 1
     const halfLen = Math.floor(nodeLen/2);
 
     for(let i=0; i < col; i++){
@@ -433,7 +442,7 @@ function genRandMaze(requestID, runBool){
 
     let randWall = [];
     let drawPos = [];
-    let speed = 10;
+    let speed = 1;
     while(wall.length){
         let w = wall.splice(Math.floor(Math.random()*wall.length), 1)[0]; // get random node
         if(w == null) continue;
@@ -454,8 +463,7 @@ function genRandMaze(requestID, runBool){
         if(randWall.length < speed) speed = randWall.length;
         for(let i=0; i < speed; i++){
             let len = (randWall[i].x + halfLen - drawPos[i].x)*2;
-            ctx.fillStyle = "darkgray";
-            ctx.fillRect(drawPos[i].x, drawPos[i].y, len, len);
+            fillNode(drawPos[i].x, drawPos[i].y, len, "darkgray");
             drawPos[i].x--;
             drawPos[i].y--;
         }
@@ -470,6 +478,87 @@ function genRandMaze(requestID, runBool){
     }
 }
 
+function recursiveBacktracker(requestID, runBool){
+    for(const col of board){
+        for(node of col){
+            if(node.property == null){
+                node.property = "wall";
+            }
+        }
+    }
+
+    function getRandNeighbor(node){
+        if(node == null) return [null, null];
+        let neighbor = [];
+        const [x, y] = node;
+
+        if((x + 2) < col && board[x+2][y].property == "wall") neighbor.push(0);
+        if((y + 2) < row && board[x][y+2].property == "wall") neighbor.push(1);
+        if(x > 1 && board[x-2][y].property == "wall") neighbor.push(2);
+        if(y > 1 && board[x][y-2].property == "wall") neighbor.push(3);
+
+        if(!neighbor.length) return [null, null];
+        const dir = neighbor[Math.floor(Math.random()*neighbor.length)];
+        neighbor = [];
+
+        if(dir == 0) neighbor.push([x+1, y], [x+2, y]);
+        if(dir == 1) neighbor.push([x, y+1], [x, y+2]);
+        if(dir == 2) neighbor.push([x-1, y], [x-2, y]);
+        if(dir == 3) neighbor.push([x, y-1], [x, y-2]);
+        return neighbor;
+    }
+
+    let stack = [[start.x, start.y]];
+    let frame = 0;
+    let skipFrame = 1;
+
+    draw();
+    function draw(){
+        if(frame > 0){ // skip frame to hit target fps
+            frame--;
+            requestID[0] = window.requestAnimationFrame(draw);
+            return;
+        }
+
+        let curNode = stack.at(-1);
+        let [firstNode, nextNode] = getRandNeighbor(curNode);
+        if(firstNode == null){  // backtrack
+            if(stack.length < 2){
+                reDrawNode();
+                setRunning(runBool, false);
+                return;
+            }
+            let [x1, y1] = stack.pop();
+            let [x2, y2] = stack.pop();
+
+            reDrawNode();
+            if(board[x2][y2].property == null){
+                fillNode(board[x1][y1].x, board[x1][y1].y, nodeLen, "rgba(255, 215, 0, .5)");
+                fillNode(board[x2][y2].x, board[x2][y2].y, nodeLen, "rgba(255, 215, 0, 1)");
+            }
+            frame+=skipFrame;
+            requestID[1] = window.requestAnimationFrame(draw);
+            return;
+        }
+
+        let [x1, y1] = firstNode;
+        let [x2, y2] = nextNode;
+        if(board[x1][y1].property == "wall") board[x1][y1].property = null;
+        if(board[x2][y2].property == "wall") board[x2][y2].property = null;
+        stack.push(firstNode, nextNode);
+
+        reDrawNode();
+        fillNode(board[x1][y1].x, board[x1][y1].y, nodeLen, "rgba(255, 215, 0, .5)");
+        fillNode(board[x2][y2].x, board[x2][y2].y, nodeLen, "rgba(255, 215, 0, 1)");
+        frame+=skipFrame;
+        requestID[2] = window.requestAnimationFrame(draw);
+    }
+}
+
+function fillNode(x, y, len, color){
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, len, len);
+}
 ///////////////////// OLD DIJKSTRA FUNCTION //////////////////////
 // async function dijkstraAlgo(intervalID){
 //     const node = [];
@@ -531,8 +620,8 @@ function genRandMaze(requestID, runBool){
 //         return [x, y];
 //     }
     
-//     let x = xStart;
-//     let y = yStart;
+//     let x = start.x;
+//     let y = start.y;
 //     node[x][y].dist = 0;
 //     let neighbor = getNeighbor(x, y);
 //     let path = [];

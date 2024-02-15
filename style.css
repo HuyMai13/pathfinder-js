@@ -32,7 +32,7 @@ li {
     border: 1px solid snow;
     border-radius: 10px;
     transform: translate(-50%, 0) scale(1);
-    transition: 200ms ease-in-out;
+    transition: 200ms ease;
     z-index: 2;
 }
 #tutorial.off {
@@ -41,7 +41,8 @@ li {
 #tutorial h1{
     display: flex;
     justify-content: center;
-    margin: 3rem;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
     font-size: 2.5rem;
     text-decoration: underline;
     text-underline-offset: 1rem;
@@ -54,6 +55,12 @@ li {
 }
 #tutorial li{
     margin: 1rem 3rem;
+}
+
+#info {
+    width: 1.5rem;
+    margin-right: 1rem;
+    cursor: pointer;
 }
 
 #overlay {
@@ -72,7 +79,7 @@ li {
     opacity: 0;
     pointer-events: none;
 }
-
+/* TOP CONTAINER */
 #top-container {
     display: flex;
     justify-content: space-between;
@@ -100,96 +107,5 @@ li {
 }
 
 #board {
-    margin: 1vh 25px;
-}
-
-/* BUTTON */
-button {
-    font-family: inherit;
-    font-size: 1.1rem;
-    font-weight: 500;
-    background-color: white;
-    transition: all 200ms ease;
-    width: 8rem;
-    padding: .7rem;
-    border-radius: 7px;
-    margin: 1vh;
-    cursor: pointer;
-}
-
-#btn-container {
-    display: flex;
-    justify-content: space-between;
-}
-
-#algo-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-#algo-container button {
-    display: flex;
-    justify-content: space-between;
-    margin-left: 3vh;
-    margin-bottom: 0;
-    padding-left: .5rem;
-    padding-right: .5rem;
-    font-size: 1rem;
-    width: 12rem;
-}
-#maze-btn {
-    margin-left: 0 !important;
-    width: 13rem !important;
-}
-
-.dropmenu {
-    display: none;
-    position: absolute;
-    left: 3vh;
-    bottom: 2.2rem;
-    padding: .5vh;
-    width: 12.5rem;
-    background-color: snow;
-    color: black;
-    border-radius: 7px;
-    font-size: 1rem;
-    font-weight: 500;
-}
-.dropmenu.show {
-    display: block;
-}
-.dropmenu li {
-    padding: .5rem 3vh;
-    cursor: pointer;
-}
-.dropmenu li:hover {
-    background-color: rgb(243, 217, 170);
-    border-radius: 7px;
-}
-
-#maze {
-    left: calc(3vh + 12.5rem);
-    width: 14rem;
-}
-
-#run {
-    font-size: 1.25rem;
-    width: 11rem;
-}
-
-#board-btn-container button:hover{
-    font-weight: 900;
-    background-color: blanchedalmond;
-}
-
-#adv-btn-container {
-    margin: 2vh 3vh;
-    font-size: 1.5rem;
-    text-decoration: underline;
-    text-underline-offset: .5rem;
-    cursor: pointer;
-}
-#adv-btn-container:hover {
-    color: rgb(252, 226, 56);
+    margin-left: 2vh;
 }
