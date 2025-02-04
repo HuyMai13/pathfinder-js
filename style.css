@@ -1,19 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500&display=swap");
 
 html {
     scroll-behavior: smooth;
 }
-
 body {
     background-color: rgb(40, 40, 40);
-    font-family: 'Raleway', sans-serif;
+    font-family: "Raleway", sans-serif;
     color: white;
 }
-
 li {
     list-style: none;
 }
-
 .grayout {
     background-color: rgb(40, 40, 40);
     color: white;
@@ -38,7 +35,7 @@ li {
 #tutorial.off {
     transform: translate(-50%, 0) scale(0);
 }
-#tutorial h1{
+#tutorial h1 {
     display: flex;
     justify-content: center;
     margin-top: 2rem;
@@ -47,13 +44,13 @@ li {
     text-decoration: underline;
     text-underline-offset: 1rem;
 }
-#tutorial h3{
+#tutorial h3 {
     font-size: 1.3rem;
     padding-left: 3rem;
     padding-right: 3rem;
     margin-bottom: 3rem;
 }
-#tutorial li{
+#tutorial li {
     margin: 1rem 3rem;
 }
 
@@ -74,7 +71,6 @@ li {
     z-index: 1;
     pointer-events: all;
 }
-
 #overlay.off {
     opacity: 0;
     pointer-events: none;
@@ -85,7 +81,6 @@ li {
     justify-content: space-between;
     margin: 1vh 3vh;
 }
-
 #legend-container {
     display: flex;
     height: 2rem;
@@ -94,18 +89,16 @@ li {
 #legend-container .img {
     width: 2rem;
 }
-
 .legend {
     line-height: 2rem;
     width: fit-content;
     text-align: center;
-    padding: 0 1.5rem 0 .25rem;
+    padding: 0 1.5rem 0 0.25rem;
 }
 
 #title {
     font-size: 3rem;
 }
-
 #board {
     margin-left: 2vh;
 }

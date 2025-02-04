@@ -1,5 +1,5 @@
-const row = 30;
-const col = 80;
+const row = 25;
+const col = 75;
 let board = [];
 
 const canvas = document.getElementById("board");
@@ -14,15 +14,17 @@ let payload = { x: null, y: null };
 let canvasImg; // blank canvas snapshot
 let img = new Image();
 
-main();
-
 function main() {
     let intervalID = []; // array pass by reference to clearInterval outside of func
     let timeoutID = [];
     let requestID = []; // array pass by reference to cancelAnimationFrame outside of func
     let running = { bool: false }; // boolean for running animation (pass by reference to modify inside of func)
-    let algo = "dijks";
     let path = []; // path to draw
+    const Algo = Object.freeze({
+        DIJKS: "Dijkstra's Algorithm",
+        ASTAR: "A* Algorithm",
+    });
+    let currentAlgo = Algo.DIJKS;
 
     const algoBtn = document.getElementById("algo-btn");
     const mazeBtn = document.getElementById("maze-btn");
@@ -52,30 +54,36 @@ function main() {
     });
 
     // ALGORITHM BUTTON LISTENER
-    document
-        .getElementById("algo-btn")
-        .addEventListener("click", () => algoList.classList.toggle("show"));
+    document.getElementById("algo-btn").addEventListener("click", () => {
+        algoList.classList.toggle("show");
+        mazeList.classList.remove("show");
+    });
     document.getElementById("algo-dijks").addEventListener("click", () => {
-        algoBtn.textContent = "Dijkstra's Algorithm";
-        algo = "dijks";
+        algoBtn.textContent = Algo.DIJKS;
+        currentAlgo = Algo.DIJKS;
         algoBtn.appendChild(arrowImg.cloneNode(true));
         algoList.classList.toggle("show");
+        s;
+        if (algoList.classList.includes("dropmenu"))
+            console.log(algoList.classList);
     });
     document.getElementById("algo-astar").addEventListener("click", () => {
-        algoBtn.textContent = "A* Algorithm";
-        algo = "astar";
+        algoBtn.textContent = Algo.ASTAR;
+        currentAlgo = Algo.ASTAR;
         algoBtn.appendChild(arrowImg.cloneNode(true));
         algoList.classList.toggle("show");
     });
     // MAZE BUTTON LISTENER
-    document
-        .getElementById("maze-btn")
-        .addEventListener("click", () => mazeList.classList.toggle("show"));
+    document.getElementById("maze-btn").addEventListener("click", () => {
+        mazeList.classList.toggle("show");
+        algoList.classList.remove("show");
+    });
     document.getElementById("recursive").addEventListener("click", async () => {
         updateNode();
         mazeBtn.textContent = "Recursive backtracker";
         mazeBtn.appendChild(arrowImg.cloneNode(true));
         mazeList.classList.toggle("show");
+        algoList.classList.remove("show");
         await genRandMaze(requestID, running, 1);
         reDrawNode();
         await new Promise((resolve) => setTimeout(resolve, 500));
@@ -93,9 +101,9 @@ function main() {
         if (!running.bool) {
             setRunning(running, true);
             updateNode();
-            if (algo === "dijks") {
+            if (currentAlgo === Algo.DIJKS) {
                 path = await aStarAlgo(intervalID, false);
-            } else if (algo === "astar") {
+            } else if (currentAlgo === Algo.ASTAR) {
                 // if-else prevent astar to run during await
                 path = await aStarAlgo(intervalID);
             }
@@ -104,8 +112,8 @@ function main() {
     });
     document.getElementById("clear").addEventListener("click", () => {
         if (!running.bool) {
-            for (let i of board) {
-                for (let node of i) {
+            for (const i of board) {
+                for (const node of i) {
                     if (node.property == "wall") {
                         node.property = null;
                     }
@@ -192,10 +200,10 @@ function resetBoard() {
 
     canvasImg = canvas.toDataURL();
     // Start and End point
-    start.x = 1;
-    start.y = 1;
-    end.x = col - 2;
-    end.y = row - 2;
+    start.x = 2;
+    start.y = 2;
+    end.x = col - 3;
+    end.y = row - 3;
     board[start.x][start.y].property = "start";
     fillNode(
         board[start.x][start.y].x,
@@ -251,14 +259,8 @@ function updateNode() {
     // update start and end xy coordinate
     for (let i = 0; i < col; i++) {
         for (let j = 0; j < row; j++) {
-            if (board[i][j].property === "start") {
-                start.x = i;
-                start.y = j;
-            }
-            if (board[i][j].property === "end") {
-                end.x = i;
-                end.y = j;
-            }
+            if (board[i][j].property === "start") [start.x, start.y] = [i, j];
+            else if (board[i][j].property === "end") [end.x, end.y] = [i, j];
         }
     }
 }
@@ -271,67 +273,45 @@ function setRunning(running, bool) {
     }
 }
 
-function aStarAlgo(intervalID, heuristic = true, randStep = false) {
+function aStarAlgo(intervalID, heuristic = true, randStep = true) {
     const nodes = [];
-    if (heuristic) {
-        for (let i = 0; i < col; i++) {
-            nodes[i] = [];
-            for (let j = 0; j < row; j++) {
-                nodes[i][j] = {
-                    // xPath yPath store previous node index to backtrack
-                    dist: Number.POSITIVE_INFINITY, // dist from start
-                    distToEnd: Math.abs(end.x - i) + Math.abs(end.y - j), // absolute dist from this to end (heuristic)
-                    visited: false,
-                    x: i,
-                    y: j,
-                    xPath: undefined, // previous node x coordinate
-                    yPath: undefined, // previous node y coordinate
-                    weight: 1,
-                    fill: false,
-                };
-            }
-        }
-    } else {
-        for (let i = 0; i < col; i++) {
-            nodes[i] = [];
-            for (let j = 0; j < row; j++) {
-                nodes[i][j] = {
-                    // xPath yPath store previous node index to backtrack
-                    dist: Number.POSITIVE_INFINITY, // dist from start
-                    distToEnd: 0, // no heuristic = dijkstra's algorithm
-                    visited: false,
-                    x: i,
-                    y: j,
-                    xPath: undefined, // previous node x coordinate
-                    yPath: undefined, // previous node y coordinate
-                    weight: 1,
-                    fill: false,
-                };
-            }
+    for (let i = 0; i < col; i++) {
+        nodes[i] = [];
+        for (let j = 0; j < row; j++) {
+            nodes[i][j] = {
+                // xPath yPath store previous node index to backtrack
+                dist: Number.POSITIVE_INFINITY, // dist from start
+                distToEnd: heuristic
+                    ? Math.abs(end.x - i) + Math.abs(end.y - j)
+                    : 0, // no heuristic = dijkstra's algorithm
+                visited: false,
+                x: i,
+                y: j,
+                xPath: undefined, // previous node x coordinate
+                yPath: undefined, // previous node y coordinate
+                weight: 1,
+                fill: false,
+            };
         }
     }
 
     // find node with min distance
     function getMinNode(nodesArr) {
-        let min = Number.POSITIVE_INFINITY;
-        let minDistToEnd = 0;
         let minNode = null;
+        let minTotalDist = Number.POSITIVE_INFINITY;
+        let minDistToEnd = 0;
 
-        for (let i = 0; i < col; i++) {
-            for (let j = 0; j < row; j++) {
-                if (nodesArr[i][j].visited === false) {
-                    let totalDist =
-                        nodesArr[i][j].dist + nodesArr[i][j].distToEnd;
-                    // find min dist node and prioritize node closer to end
-                    if (
-                        totalDist < min ||
-                        (totalDist == min &&
-                            nodesArr[i][j].distToEnd < minDistToEnd)
-                    ) {
-                        min = totalDist;
-                        minNode = nodesArr[i][j];
-                        minDistToEnd = nodesArr[i][j].distToEnd;
-                    }
+        for (const node of nodesArr.flat()) {
+            if (!node.visited) {
+                const totalDist = node.dist + node.distToEnd;
+                if (
+                    totalDist < minTotalDist ||
+                    (totalDist === minTotalDist &&
+                        node.distToEnd < minDistToEnd)
+                ) {
+                    minNode = node;
+                    minTotalDist = totalDist;
+                    minDistToEnd = node.distToEnd;
                 }
             }
         }
@@ -341,40 +321,27 @@ function aStarAlgo(intervalID, heuristic = true, randStep = false) {
     // get neighbor node from x, y (top, left, bot, right) if possible
     function getNeighbor(node, nodes) {
         const neighbor = [];
-        const x = node.x;
-        const y = node.y;
-        if (x + 1 < col && nodes[x + 1][y].visited === false) {
-            if (
-                board[x + 1][y].property === null ||
-                board[x + 1][y].property === "end"
-            ) {
-                neighbor.push(nodes[x + 1][y]);
+        const [x, y] = [node.x, node.y];
+        const nullProp = [null, "end"];
+        const directions = [
+            [1, 0],
+            [0, 1],
+            [-1, 0],
+            [0, -1],
+        ];
+        directions.forEach(([dx, dy]) => {
+            const newX = x + dx;
+            const newY = y + dy;
+            if (newX >= 0 && newX < col && newY >= 0 && newY < row) {
+                const curNode = nodes[newX][newY];
+                if (
+                    !curNode.visited &&
+                    nullProp.includes(board[newX][newY].property)
+                ) {
+                    neighbor.push(curNode);
+                }
             }
-        }
-        if (y + 1 < row && nodes[x][y + 1].visited === false) {
-            if (
-                board[x][y + 1].property === null ||
-                board[x][y + 1].property === "end"
-            ) {
-                neighbor.push(nodes[x][y + 1]);
-            }
-        }
-        if (x > 0 && nodes[x - 1][y].visited === false) {
-            if (
-                board[x - 1][y].property === null ||
-                board[x - 1][y].property === "end"
-            ) {
-                neighbor.push(nodes[x - 1][y]);
-            }
-        }
-        if (y > 0 && nodes[x][y - 1].visited === false) {
-            if (
-                board[x][y - 1].property === null ||
-                board[x][y - 1].property === "end"
-            ) {
-                neighbor.push(nodes[x][y - 1]);
-            }
-        }
+        });
         return neighbor;
     }
 
@@ -401,32 +368,30 @@ function aStarAlgo(intervalID, heuristic = true, randStep = false) {
         if (curNode != null) {
             neighbor = getNeighbor(curNode, nodes);
             curNode.visited = true;
-            x = curNode.x;
-            y = curNode.y;
         }
-        for (let i = 0; i < neighbor.length; i++) {
-            let xNb = neighbor[i].x;
-            let yNb = neighbor[i].y;
+        for (const curNb of neighbor) {
+            let xNb = curNb.x;
+            let yNb = curNb.y;
             let newDist = curNode.dist + nodes[xNb][yNb].weight;
             if (newDist < nodes[xNb][yNb].dist) {
                 nodes[xNb][yNb].dist = curNode.dist + nodes[xNb][yNb].weight;
-                nodes[xNb][yNb].xPath = x;
-                nodes[xNb][yNb].yPath = y;
+                [nodes[xNb][yNb].xPath, nodes[xNb][yNb].yPath] = [
+                    curNode.x,
+                    curNode.y,
+                ];
             }
             if (board[xNb][yNb].property === "end") {
                 // trace back from end to start
                 const path = [];
                 while (board[xNb][yNb].property !== "start") {
                     path.unshift([xNb, yNb]);
-                    xTemp = xNb;
-                    xNb = nodes[xNb][yNb].xPath;
-                    yNb = nodes[xTemp][yNb].yPath;
+                    [xNb, yNb] = [nodes[xNb][yNb].xPath, nodes[xNb][yNb].yPath];
                 }
                 x = null;
                 y = null;
                 return path;
             }
-            if (nodes[xNb][yNb].fill === false) {
+            if (!nodes[xNb][yNb].fill) {
                 fillNode(
                     board[xNb][yNb].x,
                     board[xNb][yNb].y,
@@ -460,65 +425,56 @@ function drawPath(path, delay, timeout) {
     }
 }
 
-function genRandMaze(requestID, runBool, density = 4) {
+function genRandMaze(requestID, runBool, density = 5) {
     // lower denser
-    let wall = [];
+    let walls = [];
     const halfLen = Math.floor(nodeLen / 2);
 
-    for (let i = 0; i < col; i++) {
-        for (let j = 0; j < row; j++) {
-            if (
-                board[i][j].property == null &&
-                Math.floor(Math.random() * density + 1) == 1
-            ) {
-                wall.push({
-                    x: board[i][j].x,
-                    y: board[i][j].y,
-                });
-                board[i][j].property = "wall";
-            }
+    for (const cell of board.flat()) {
+        if (
+            cell.property == null &&
+            Math.floor(Math.random() * density + 1) == 1
+        ) {
+            walls.push({ x: cell.x, y: cell.y });
+            cell.property = "wall";
         }
     }
 
-    let randWall = [];
-    let drawPos = [];
-    let speed = 1;
-    while (wall.length) {
-        let w = wall.splice(Math.floor(Math.random() * wall.length), 1)[0]; // get random node
-        if (w == null) continue;
-        randWall.push(w);
-        drawPos.push({
-            x: w.x + halfLen,
-            y: w.y + halfLen,
-        });
+    // shuffle walls
+    for (let i = walls.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [walls[i], walls[j]] = [walls[j], walls[i]];
     }
+    const drawPos = walls.map((w) => ({ x: w.x + halfLen, y: w.y + halfLen }));
+    let speed = 1;
 
     setRunning(runBool, true);
     return new Promise((resolve) => {
-        draw();
-
         function draw() {
-            if (!randWall.length) {
+            if (!walls.length) {
                 setRunning(runBool, false);
                 resolve();
                 return;
             }
-            if (randWall.length < speed) speed = randWall.length;
+            speed = Math.min(walls.length, speed);
+            // start drawing 'speed'# of node
             for (let i = 0; i < speed; i++) {
-                let len = (randWall[i].x + halfLen - drawPos[i].x) * 2;
+                const len = (walls[i].x + halfLen - drawPos[i].x) * 2;
                 fillNode(drawPos[i].x, drawPos[i].y, len, "darkgray");
                 drawPos[i].x--;
                 drawPos[i].y--;
             }
-            if (drawPos[0].x < randWall[0].x) {
-                for (let i = 0; i < speed; i++) {
+            // stop drawing above node
+            for (let i = 0; i < speed; i++) {
+                if (drawPos[0].x < walls[0].x) {
                     drawPos.shift();
-                    randWall.shift();
+                    walls.shift();
                 }
-                speed += speed / (density + 1);
             }
+            speed += speed / (density * 2 + 1); // go faster after each draw for smooth animation
             requestID[0] = requestAnimationFrame(draw);
         }
+        draw();
     });
 }
 
@@ -526,55 +482,42 @@ function recursiveBacktracker(requestID, runBool, skipFrame = 0.25) {
     setRunning(runBool, true);
     for (const col of board) {
         for (node of col) {
-            if (node.property == null) {
-                node.property = "wall";
-            }
+            node.property = node.property == null ? "wall" : node.property;
         }
     }
 
     function getRandNeighbor(node) {
-        if (node == null) return [null, null];
-        let neighbor = [];
+        if (!node) return [null, null];
         const [x, y] = node;
+        const directions = [
+            [2, 0],
+            [0, 2],
+            [-2, 0],
+            [0, -2],
+        ];
+        const validNeighbors = directions.filter(([dx, dy]) => {
+            const newX = x + dx;
+            const newY = y + dy;
+            return (
+                newX >= 0 &&
+                newX < col &&
+                newY >= 0 &&
+                newY < row &&
+                ["wall", "end"].includes(board[newX][newY].property)
+            );
+        });
 
-        if (
-            x + 2 < col &&
-            (board[x + 2][y].property == "wall" ||
-                board[x + 2][y].property == "end")
-        )
-            neighbor.push(0);
-        if (
-            y + 2 < row &&
-            (board[x][y + 2].property == "wall" ||
-                board[x][y + 2].property == "end")
-        )
-            neighbor.push(1);
-        if (
-            x > 1 &&
-            (board[x - 2][y].property == "wall" ||
-                board[x - 2][y].property == "end")
-        )
-            neighbor.push(2);
-        if (
-            y > 1 &&
-            (board[x][y - 2].property == "wall" ||
-                board[x][y - 2].property == "end")
-        )
-            neighbor.push(3);
-
-        if (!neighbor.length) return [null, null];
-        const dir = neighbor[Math.floor(Math.random() * neighbor.length)];
-        neighbor = [];
-
-        if (dir == 0) neighbor.push([x + 1, y], [x + 2, y]);
-        if (dir == 1) neighbor.push([x, y + 1], [x, y + 2]);
-        if (dir == 2) neighbor.push([x - 1, y], [x - 2, y]);
-        if (dir == 3) neighbor.push([x, y - 1], [x, y - 2]);
-        return neighbor;
+        if (!validNeighbors.length) return [null, null];
+        const [dx, dy] =
+            validNeighbors[Math.floor(Math.random() * validNeighbors.length)];
+        return [
+            [x + dx / 2, y + dy / 2],
+            [x + dx, y + dy],
+        ];
     }
 
-    let stack = [[start.x, start.y]];
-    let frame = 0;
+    const stack = [[start.x, start.y]];
+    let frame = 2;
     let backtracking = false; // for animation only
     let reachEnd = false;
 
@@ -588,7 +531,7 @@ function recursiveBacktracker(requestID, runBool, skipFrame = 0.25) {
             return;
         }
 
-        let curNode = stack.at(-1);
+        const curNode = stack.at(-1);
         let [firstNode, nextNode] = getRandNeighbor(curNode);
         if (
             firstNode == null ||
@@ -658,3 +601,5 @@ function fillNode(x, y, len, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, len, len);
 }
+
+main();
