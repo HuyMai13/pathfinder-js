@@ -78,18 +78,3 @@ button {
     color: snow;
     background-color: darkslategray;
 }
-#settings-container {
-    display: flex;
-    align-items: center;
-    margin-right: 2vw;
-    font-size: 1.25rem;
-    text-decoration: underline;
-    text-underline-offset: 0.5rem;
-    cursor: pointer;
-}
-#settings-container img {
-    padding-right: 0.5rem;
-}
-#settings-container:hover {
-    color: rgb(252, 226, 56);
-}

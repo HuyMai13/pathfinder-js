@@ -1,6 +1,15 @@
+#settings-btn {
+    display: flex;
+    align-items: center;
+    margin-right: 3vw;
+    cursor: pointer;
+}
+#settings-btn img {
+    height: 2rem;
+}
 .settings {
     display: flex;
-    flex-direction: row;
+    justify-content: center;
     font-size: 1.2rem;
     font-weight: 600;
     margin: 2rem;

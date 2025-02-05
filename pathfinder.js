@@ -121,34 +121,37 @@ function main() {
         }
     });
     // SETTINGS LISTENER
-    document
-        .getElementById("settings-container")
-        .addEventListener("click", () => {
-            document
-                .querySelectorAll("#settings-window, #overlay")
-                .forEach((e) => e.classList.remove("off"));
-        });
+    document.getElementById("settings-btn").addEventListener("click", () => {
+        document
+            .querySelectorAll("#settings-window, #overlay")
+            .forEach((e) => e.classList.remove("off"));
+    });
     document.querySelector(".settings").addEventListener("click", (event) => {
         const clickedEl = event.target;
-        if (clickedEl.classList.contains("board-size")) {
-            const sizeMap = {
-                xs: [10, 30],
-                s: [15, 45],
-                m: [20, 60],
-                l: [25, 75],
-                xl: [30, 90],
-            };
-            const prevSelected = document.querySelector(".board-size.selected");
-            if (prevSelected) {
-                prevSelected.classList.remove("selected");
-            }
-            clickedEl.classList.add("selected");
-            const selectedSize = clickedEl.textContent.toLowerCase();
-            [row, col] = sizeMap[selectedSize];
-            resetBoard();
-        }
-    });
+        if (!clickedEl.classList.contains("board-size")) return;
+        const sizeMap = {
+            x: { size: [10, 30], label: "Extra Small", ini: "XS" },
+            e: { size: [10, 30], label: "Extra Small", ini: "XS" },
+            s: { size: [15, 45], label: "Small", ini: "S" },
+            m: { size: [20, 60], label: "Medium", ini: "M" },
+            l: { size: [25, 75], label: "Large", ini: "L" },
+        };
 
+        const prevSelected = document.querySelector(".board-size.selected");
+        if (prevSelected) {
+            prevSelected.classList.remove("selected");
+            const prevKey = prevSelected.textContent.trim().toLowerCase()[0];
+            prevSelected.textContent = sizeMap[prevKey].ini;
+        }
+
+        clickedEl.classList.add("selected");
+        const selectedKey = clickedEl.textContent.trim().toLowerCase()[0];
+        const { size, label } = sizeMap[selectedKey];
+        [row, col] = size;
+        clickedEl.textContent = label;
+
+        resetBoard();
+    });
     // CANVAS LISTENER
     canvas.addEventListener("mousedown", (e) => {
         if (running.bool) return;
