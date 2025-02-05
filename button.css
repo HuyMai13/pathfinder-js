@@ -78,7 +78,7 @@ button {
     color: snow;
     background-color: darkslategray;
 }
-#adv-btn-container {
+#settings-container {
     display: flex;
     align-items: center;
     margin-right: 2vw;
@@ -87,9 +87,9 @@ button {
     text-underline-offset: 0.5rem;
     cursor: pointer;
 }
-#adv-btn-container img {
+#settings-container img {
     padding-right: 0.5rem;
 }
-#adv-btn-container:hover {
+#settings-container:hover {
     color: rgb(252, 226, 56);
 }

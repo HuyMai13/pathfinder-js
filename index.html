@@ -6,13 +6,14 @@
         <title>Pathfinding Demo</title>
         <link rel="stylesheet" href="style.css" />
         <link rel="stylesheet" href="button.css" />
+        <link rel="stylesheet" href="setttings.css" />
     </head>
     <body>
-        <div id="tutorial">
+        <div id="tutorial-window" class="window">
             <h1>Tutorial</h1>
             <h3>
-                This is a visual demo of pathfinding algorithm and maze
-                generation algorithm
+                A visual demo of pathfinding algorithm and maze generation
+                algorithm
             </h3>
             <li>
                 Drag
@@ -30,10 +31,10 @@
                 turn back to empty node
             </li>
             <li>
-                [ W I P ] Double click to add a payload (a middle target to
-                reach before
-                <span style="color: red; font-size: 125%">end</span> node) [ W I
-                P ]
+                [ WIP ] Double click to add a payload (a middle target to reach
+                before
+                <span style="color: red; font-size: 125%">end</span> node) [ WIP
+                ]
             </li>
         </div>
         <div id="overlay"></div>
@@ -90,9 +91,20 @@
                 <button id="run">Run Pathfinder</button>
                 <button id="clear">Clear Wall</button>
             </div>
-            <div id="adv-btn-container">
+            <div id="settings-container">
                 <img src="./assets//icons-setting-fill.svg" alt="Setting" />
                 <div>Advanced</div>
+            </div>
+        </div>
+        <div class="window off" id="settings-window">
+            <h1>Settings</h1>
+            <div class="settings">
+                Board size:
+                <div class="board-size">XS</div>
+                <div class="board-size">S</div>
+                <div class="board-size selected">M</div>
+                <div class="board-size">L</div>
+                <div class="board-size">XL</div>
             </div>
         </div>
         <script src="pathfinder.js"></script>

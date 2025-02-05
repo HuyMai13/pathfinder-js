@@ -1,11 +1,10 @@
-const row = 25;
-const col = 75;
 let board = [];
+let [row, col] = [20, 60];
 
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth - 2 * (canvas.offsetLeft + 10);
-const nodeLen = canvas.width / col;
+let nodeLen = canvas.width / col;
 canvas.height = nodeLen * row + 1;
 
 let start = { x: null, y: null };
@@ -35,12 +34,14 @@ function main() {
 
     resetBoard();
     document.getElementById("overlay").addEventListener("click", () => {
-        document.getElementById("overlay").classList.add("off");
-        document.getElementById("tutorial").classList.add("off");
+        document
+            .querySelectorAll("#tutorial-window, #settings-window, #overlay")
+            .forEach((e) => e.classList.add("off"));
     });
     document.getElementById("info").addEventListener("click", () => {
-        document.getElementById("overlay").classList.remove("off");
-        document.getElementById("tutorial").classList.remove("off");
+        document
+            .querySelectorAll("#tutorial-window, #overlay")
+            .forEach((e) => e.classList.remove("off"));
     });
     document.getElementById("reset").addEventListener("click", () => {
         // clear all animation before reset
@@ -63,9 +64,6 @@ function main() {
         currentAlgo = Algo.DIJKS;
         algoBtn.appendChild(arrowImg.cloneNode(true));
         algoList.classList.toggle("show");
-        s;
-        if (algoList.classList.includes("dropmenu"))
-            console.log(algoList.classList);
     });
     document.getElementById("algo-astar").addEventListener("click", () => {
         algoBtn.textContent = Algo.ASTAR;
@@ -122,18 +120,46 @@ function main() {
             reDrawNode();
         }
     });
+    // SETTINGS LISTENER
+    document
+        .getElementById("settings-container")
+        .addEventListener("click", () => {
+            document
+                .querySelectorAll("#settings-window, #overlay")
+                .forEach((e) => e.classList.remove("off"));
+        });
+    document.querySelector(".settings").addEventListener("click", (event) => {
+        const clickedEl = event.target;
+        if (clickedEl.classList.contains("board-size")) {
+            const sizeMap = {
+                xs: [10, 30],
+                s: [15, 45],
+                m: [20, 60],
+                l: [25, 75],
+                xl: [30, 90],
+            };
+            const prevSelected = document.querySelector(".board-size.selected");
+            if (prevSelected) {
+                prevSelected.classList.remove("selected");
+            }
+            clickedEl.classList.add("selected");
+            const selectedSize = clickedEl.textContent.toLowerCase();
+            [row, col] = sizeMap[selectedSize];
+            resetBoard();
+        }
+    });
 
-    // CANVAS LISTENERS
+    // CANVAS LISTENER
     canvas.addEventListener("mousedown", (e) => {
         if (running.bool) return;
         const [x, y] = getMousePos(e);
-        let xTemp = x,
-            yTemp = y;
+        let [xTemp, yTemp] = [x, y];
         // check if drag
-        if (board[x][y].property !== null && board[x][y].property !== "wall") {
+        if (![null, "wall"].includes(board[x][y].property)) {
             let property = board[x][y].property;
 
             canvas.onmousemove = (e) => {
+                // dragging
                 const [x, y] = getMousePos(e);
                 if (board[x][y].property === null) {
                     board[x][y].property = property;
@@ -146,7 +172,6 @@ function main() {
                 }
             };
         } else {
-            // or draw wall
             toggleWall(x, y);
             reDrawNode();
             let [xCur, yCur] = getMousePos(e);
@@ -162,9 +187,9 @@ function main() {
     });
     canvas.addEventListener("mousemove", (e) => highlightNode(e));
     canvas.addEventListener("mouseup", () => (canvas.onmousemove = null));
-    canvas.addEventListener("dblclick", (e) => {
-        const [x, y] = getMousePos(e);
-    });
+    // canvas.addEventListener("dblclick", (e) => {
+    //     const [x, y] = getMousePos(e);
+    // });
     canvas.addEventListener("mouseout", () => {
         if (running.bool) return;
         reDrawNode();
@@ -185,6 +210,7 @@ function resetBoard() {
     ctx.reset();
     ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
     ctx.lineWidth = 0.25;
+    nodeLen = canvas.width / col;
     // Init 2d board array
     for (let i = 0; i < col; i++) {
         board[i] = [];
@@ -199,7 +225,7 @@ function resetBoard() {
     }
 
     canvasImg = canvas.toDataURL();
-    // Start and End point
+    // Start and End
     start.x = 2;
     start.y = 2;
     end.x = col - 3;

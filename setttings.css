@@ -1,0 +1,21 @@
+.settings {
+    display: flex;
+    flex-direction: row;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 2rem;
+}
+.board-size {
+    padding: 0 1.5rem;
+    cursor: pointer;
+}
+.board-size.selected {
+    color: darkgray;
+    text-decoration: underline;
+    text-underline-offset: 0.5rem;
+}
+.board-size:hover {
+    color: cyan;
+    text-decoration: underline;
+    text-underline-offset: 0.5rem;
+}

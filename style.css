@@ -18,13 +18,12 @@ li {
 }
 
 /* TUTORIAL */
-#tutorial {
+.window {
     position: fixed;
     padding-bottom: 1.5rem;
     top: 20%;
     left: 50%;
-    width: 100vh;
-    max-width: 75%;
+    max-width: 80%;
     background-color: rgb(20, 20, 20);
     border: 1px solid snow;
     border-radius: 10px;
@@ -32,25 +31,22 @@ li {
     transition: 200ms ease;
     z-index: 2;
 }
-#tutorial.off {
+.window.off {
     transform: translate(-50%, 0) scale(0);
 }
-#tutorial h1 {
+.window h1 {
     display: flex;
     justify-content: center;
     margin-top: 2rem;
-    margin-bottom: 3rem;
-    font-size: 2.5rem;
+    font-size: 3rem;
     text-decoration: underline;
-    text-underline-offset: 1rem;
+    text-underline-offset: 0.5rem;
 }
-#tutorial h3 {
+.window h3 {
     font-size: 1.3rem;
-    padding-left: 3rem;
-    padding-right: 3rem;
-    margin-bottom: 3rem;
+    padding: 2rem 3rem;
 }
-#tutorial li {
+.window li {
     margin: 1rem 3rem;
 }
 
