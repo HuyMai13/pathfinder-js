@@ -36,18 +36,17 @@
                 <span style="color: red; font-size: 125%">end</span> node) [ WIP
                 ]
             </li>
-            <div id="tut-link">
-                <a href="https://github.com/HuyMai13/pathfinder-js"
-                    ><img src="./assets/github.svg"
-                /></a>
-                <div>Source</div>
-            </div>
         </div>
         <div id="overlay"></div>
         <div id="top-container">
             <div id="title">Pathfinder</div>
             <div id="legend-container">
-                <img id="info" src="./assets/info-circle.svg" alt="Tutorial" />
+                <img
+                    id="info"
+                    src="./assets/info-circle.svg"
+                    title="Info/Tutorial"
+                    alt="Tutorial"
+                />
                 <img class="img" src="./assets/start.png" alt="Start node" />
                 <div class="legend">Start</div>
                 <img class="img" src="./assets/end.png" alt="End node" />
@@ -89,7 +88,7 @@
                 </button>
                 <ul class="dropmenu" id="maze">
                     <li id="recursive">Recursive maze</li>
-                    <li id="random">Random wall</li>
+                    <li id="random">Random maze</li>
                 </ul>
             </div>
             <div id="board-btn-container">
@@ -98,7 +97,11 @@
                 <button id="clear">Clear Wall</button>
             </div>
             <div id="settings-btn">
-                <img src="./assets//icons-setting-fill.svg" alt="Setting" />
+                <img
+                    src="./assets//icons-setting-fill.svg"
+                    title="Settings"
+                    alt="Setting"
+                />Setting
             </div>
         </div>
         <div class="window off" id="settings-window">
@@ -111,12 +114,16 @@
                 <div class="board-size">L</div>
             </div>
         </div>
-        <a
-            href="https://github.com/HuyMai13/pathfinder-js"
-            target="_blank"
-            rel="noopener noreferrer"
-            ><img class="link" src="./assets/github.svg"
-        /></a>
+        <div id="tut-link">
+            <a
+                href="https://github.com/HuyMai13/pathfinder-js"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link"
+                ><img src="./assets/github.svg" />
+                <div>View on Github</div></a
+            >
+        </div>
         <script src="pathfinder.js"></script>
     </body>
 </html>

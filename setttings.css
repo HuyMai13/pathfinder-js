@@ -1,11 +1,13 @@
 #settings-btn {
     display: flex;
     align-items: center;
-    margin-right: 3vw;
+    margin-right: 2vw;
     cursor: pointer;
+    font-size: 1.25rem;
 }
 #settings-btn img {
-    height: 2rem;
+    height: 1.5rem;
+    padding-right: 0.25rem;
 }
 .settings {
     display: flex;

@@ -23,7 +23,7 @@ li {
     top: 20%;
     left: 50%;
     max-width: 80%;
-    padding: 2rem 0;
+    padding: 2rem 0 1.5rem 0;
     background-color: rgb(20, 20, 20);
     border: 1px solid snow;
     border-radius: 10px;
@@ -48,19 +48,6 @@ li {
 }
 .window li {
     margin: 1rem 3rem;
-}
-#tut-link {
-    display: flex;
-    justify-content: center;
-    color: white;
-}
-#tut-link div {
-    cursor: pointer;
-    padding: 0.25rem;
-}
-#tut-link div:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.25rem;
 }
 
 .window img {
@@ -109,6 +96,24 @@ li {
     width: fit-content;
     text-align: center;
     padding: 0 1.5rem 0 0.25rem;
+}
+
+#tut-link {
+    display: flex;
+    justify-content: center;
+}
+a {
+    display: flex;
+    text-decoration: none;
+}
+a div {
+    color: white;
+    cursor: pointer;
+    padding: 1rem 0 0 0.5rem;
+}
+a div:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25rem;
 }
 .link {
     position: fixed;
