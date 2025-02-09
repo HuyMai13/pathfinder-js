@@ -19,7 +19,7 @@
                 Drag
                 <span style="color: limegreen; font-size: 125%">start</span> and
                 <span style="color: red; font-size: 125%">end</span> node to
-                move it to an empty node
+                move it to an empty cell
             </li>
             <li>
                 Click or drag on empty node to create
@@ -28,14 +28,16 @@
             <li>
                 Click or drag on
                 <span style="color: darkgray; font-size: 125%">wall</span> to
-                turn back to empty node
+                turn back to empty cell
             </li>
-            <li>
+            <br />
+            <li>> Click outside to continue</li>
+            <!-- <li>
                 [ WIP ] Double click to add a payload (a middle target to reach
                 before
                 <span style="color: red; font-size: 125%">end</span> node) [ WIP
                 ]
-            </li>
+            </li> -->
         </div>
         <div id="overlay"></div>
         <div id="top-container">
@@ -101,17 +103,22 @@
                     src="./assets//icons-setting-fill.svg"
                     title="Settings"
                     alt="Setting"
-                />Setting
+                />Settings
             </div>
         </div>
         <div class="window off" id="settings-window">
             <h1>Settings</h1>
             <div class="settings">
                 Board size:
-                <div class="board-size">XS</div>
-                <div class="board-size">S</div>
-                <div class="board-size selected">M</div>
-                <div class="board-size">L</div>
+                <span class="board-size">XS</span>
+                <span class="board-size">S</span>
+                <span class="board-size selected">Medium</span>
+                <span class="board-size">L</span>
+            </div>
+            <div class="settings">
+                Animation speed:
+                <input type="range" id="speed" min="0" max="10" value="5" />
+                <span id="speed-value">5</span>
             </div>
         </div>
         <div id="tut-link">

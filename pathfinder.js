@@ -53,7 +53,53 @@ function main() {
         setRunning(running, false);
         resetBoard();
     });
+    // SETTINGS LISTENER
+    let animationSpeed;
+    document.getElementById("settings-btn").addEventListener("click", () => {
+        document
+            .querySelectorAll("#settings-window, #overlay")
+            .forEach((e) => e.classList.remove("off"));
+    });
+    document.querySelectorAll(".settings").forEach((e) => {
+        e.addEventListener("click", (event) => {
+            const clickedEl = event.target;
+            if (clickedEl.classList.contains("board-size")) {
+                const sizeMap = {
+                    x: { size: [10, 30], label: "Extra Small", ini: "XS" },
+                    e: { size: [10, 30], label: "Extra Small", ini: "XS" },
+                    s: { size: [15, 45], label: "Small", ini: "S" },
+                    m: { size: [20, 60], label: "Medium", ini: "M" },
+                    l: { size: [25, 75], label: "Large", ini: "L" },
+                };
 
+                const prevSelected = document.querySelector(
+                    ".board-size.selected"
+                );
+                if (prevSelected) {
+                    prevSelected.classList.remove("selected");
+                    const prevKey = prevSelected.textContent
+                        .trim()
+                        .toLowerCase()[0];
+                    prevSelected.textContent = sizeMap[prevKey].ini;
+                }
+
+                clickedEl.classList.add("selected");
+                const selectedKey = clickedEl.textContent
+                    .trim()
+                    .toLowerCase()[0];
+                const { size, label } = sizeMap[selectedKey];
+                [row, col] = size;
+                clickedEl.textContent = label;
+
+                resetBoard();
+            }
+            if (e.querySelector("#speed-value")) {
+                animationSpeed = document.getElementById("speed").value;
+                document.getElementById("speed-value").textContent =
+                    animationSpeed;
+            }
+        });
+    });
     // ALGORITHM BUTTON LISTENER
     document.getElementById("algo-btn").addEventListener("click", () => {
         algoList.classList.toggle("show");
@@ -85,7 +131,7 @@ function main() {
         await genRandMaze(requestID, running, 1);
         reDrawNode();
         await new Promise((resolve) => setTimeout(resolve, 500));
-        recursiveBacktracker(requestID, running);
+        recursiveBacktracker(requestID, running, animationSpeed);
     });
     document.getElementById("random").addEventListener("click", () => {
         mazeBtn.textContent = "Random wall";
@@ -93,7 +139,6 @@ function main() {
         mazeList.classList.toggle("show");
         genRandMaze(requestID, running);
     });
-
     // RUN PATHFINDER LISTENER
     document.getElementById("run").addEventListener("click", async () => {
         if (!running.bool) {
@@ -120,38 +165,7 @@ function main() {
             reDrawNode();
         }
     });
-    // SETTINGS LISTENER
-    document.getElementById("settings-btn").addEventListener("click", () => {
-        document
-            .querySelectorAll("#settings-window, #overlay")
-            .forEach((e) => e.classList.remove("off"));
-    });
-    document.querySelector(".settings").addEventListener("click", (event) => {
-        const clickedEl = event.target;
-        if (!clickedEl.classList.contains("board-size")) return;
-        const sizeMap = {
-            x: { size: [10, 30], label: "Extra Small", ini: "XS" },
-            e: { size: [10, 30], label: "Extra Small", ini: "XS" },
-            s: { size: [15, 45], label: "Small", ini: "S" },
-            m: { size: [20, 60], label: "Medium", ini: "M" },
-            l: { size: [25, 75], label: "Large", ini: "L" },
-        };
 
-        const prevSelected = document.querySelector(".board-size.selected");
-        if (prevSelected) {
-            prevSelected.classList.remove("selected");
-            const prevKey = prevSelected.textContent.trim().toLowerCase()[0];
-            prevSelected.textContent = sizeMap[prevKey].ini;
-        }
-
-        clickedEl.classList.add("selected");
-        const selectedKey = clickedEl.textContent.trim().toLowerCase()[0];
-        const { size, label } = sizeMap[selectedKey];
-        [row, col] = size;
-        clickedEl.textContent = label;
-
-        resetBoard();
-    });
     // CANVAS LISTENER
     canvas.addEventListener("mousedown", (e) => {
         if (running.bool) return;
@@ -507,7 +521,7 @@ function genRandMaze(requestID, runBool, density = 5) {
     });
 }
 
-function recursiveBacktracker(requestID, runBool, skipFrame = 0.25) {
+function recursiveBacktracker(requestID, runBool, speed) {
     setRunning(runBool, true);
     for (const col of board) {
         for (node of col) {
@@ -546,9 +560,10 @@ function recursiveBacktracker(requestID, runBool, skipFrame = 0.25) {
     }
 
     const stack = [[start.x, start.y]];
-    let frame = 2;
+    let frame = 0;
     let backtracking = false; // for animation only
     let reachEnd = false;
+    speed = speed > 5 ? 5 - (speed - 5) : 5 + (5 - speed);
 
     draw();
 
@@ -569,7 +584,7 @@ function recursiveBacktracker(requestID, runBool, skipFrame = 0.25) {
             // backtrack
             if (!backtracking) {
                 // slow down animation at dead end before backtracking
-                frame += skipFrame * 10 + 1;
+                frame += speed * 5 + 1;
                 backtracking = true;
             }
             if (stack.length < 2) {
@@ -595,7 +610,7 @@ function recursiveBacktracker(requestID, runBool, skipFrame = 0.25) {
                     "rgba(255, 215, 0, 1)"
                 );
             }
-            frame += skipFrame;
+            frame += speed;
             requestID[1] = requestAnimationFrame(draw);
             return;
         }
@@ -621,7 +636,7 @@ function recursiveBacktracker(requestID, runBool, skipFrame = 0.25) {
             nodeLen,
             "rgba(255, 215, 0, 1)"
         );
-        frame += skipFrame;
+        frame += speed;
         requestID[2] = requestAnimationFrame(draw);
     }
 }
